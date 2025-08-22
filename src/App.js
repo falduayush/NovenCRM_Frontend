@@ -1,0 +1,71 @@
+import React from 'react';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Sidebar from './components/Sidebar';
+import Dashboard from './pages/Dashboard';
+import Templates from './pages/Templates';
+import Data from './pages/Data';
+import Campaigns from './pages/Campaigns';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
+function App() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+
+  return (
+    <AuthProvider>
+      <div className="App">
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+          }}
+        />
+        
+        {!isAuthPage && <Sidebar />}
+        
+        <div className={`${isAuthPage ? 'auth-page' : 'ml-64'}`}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            
+            {/* Default redirect to login */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/templates" element={
+              <ProtectedRoute>
+                <Templates />
+              </ProtectedRoute>
+            } />
+            <Route path="/data" element={
+              <ProtectedRoute>
+                <Data />
+              </ProtectedRoute>
+            } />
+            <Route path="/campaigns" element={
+              <ProtectedRoute>
+                <Campaigns />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </div>
+      </div>
+    </AuthProvider>
+  );
+}
+
+export default App;
